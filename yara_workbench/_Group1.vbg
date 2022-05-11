@@ -1,0 +1,3 @@
+VBGROUP 5.0
+StartupProject=_yara_workbench.vbp
+Project=..\..\scivb2\SCIVB2.vbp

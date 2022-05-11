@@ -1,0 +1,93 @@
+
+note libYara 3.11 changed the scan file path from wchar to char* 
+3.10 is not compatiable anymore without mod
+---------------------------------------------------
+
+to upgrade libyara to new version:
+
+
+./include/janson and openssl headers
+./libs
+
+<hex_grammer.h> = "..."
+<re_grammer.h> = "..."
+
+vb.h
+exports.def
+
+--------------------------------------------
+./include/yara/limits.h
+
+#ifndef LLONG_MAX
+//-----------------------------dzzie
+#define CHAR_BIT 8  
+#define LLONG_MAX  9223372036854775807LL
+#define INT_MAX    2147483647
+#define ULONG_MAX  4294967295UL
+//---------------------------------
+#endif
+
+----------------------------------------------
+
+object.h
+
+#include "vb.h" //dzzie
+
+--------------------------------------------
+
+object.c
+
+//---------------- dzzie
+vbCallback vbStdOut = 0;
+
+void __stdcall SetVBCallBack(vbCallback cb) {
+#pragma EXPORT
+	vbStdOut = cb;
+}
+
+void vb_dbg(cb_type ct, char* format, ...) {
+
+	int rv = 0;
+	char buf[1024];
+
+	if (vbStdOut == 0) return;
+
+	if (format) {
+		va_list args;
+		va_start(args, format);
+		_vsnprintf(buf, 1024, format, args);
+		rv = vbStdOut(ct, buf);
+		va_end(args);
+	}
+
+	return;
+
+}
+
+//call back passed into print_object from yaraHelper.dll on demand. for this one..could switch over to above..
+void cb_printf(vbCallback cb, char* format, ...) {
+
+	DWORD dwErr = GetLastError();
+	int rv = 0;
+
+	if (format) {
+		char buf[1024];
+		va_list args;
+		va_start(args, format);
+		_vsnprintf(buf, 1024, format, args);
+		rv = cb(cb_moduleInfo, buf);
+		va_end(args);
+	}
+
+	SetLastError(dwErr);
+	return;
+
+}
+//------------------- dzzie
+
+modify printobj function
+
+
+static IMPORTED_DLL* pe_parse_imports 
+
+

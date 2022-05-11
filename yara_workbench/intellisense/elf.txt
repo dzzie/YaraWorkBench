@@ -1,0 +1,153 @@
+#https://yara.readthedocs.io/en/v3.7.0/modules/elf.html
+
+type
+machine
+entry_point
+number_of_sections
+sections[*]
+{
+    name
+    size
+    offset
+    type
+    flags
+    address
+}
+number_of_segments
+segments[*]
+{
+	alignment
+	file_size
+	flags
+	memory_size
+	offset
+	physical_address
+	type
+	virtual_address
+}
+dynamic_section_entries
+dynamic[*]
+{
+	type
+	value
+}
+symtab_entries
+symtab[*]
+{
+	name
+	value
+	size
+	type
+	bind
+	shndx
+}
+
+#CONSTANTS
+
+#enum elf.type
+ET_NONE    ;No file type.
+ET_REL     ;Relocatable file.
+ET_EXEC    ;Executable file.
+ET_DYN     ;Shared object file.
+ET_CORE    ;Core file.
+
+#enum elf.machine
+EM_M32
+EM_SPARC
+EM_386
+EM_68K
+EM_88K
+EM_860
+EM_MIPS
+EM_MIPS_RS3_LE
+EM_PPC
+EM_PPC64
+EM_ARM
+EM_X86_64
+EM_AARCH64
+
+#enum elf.sections[*].type
+SHT_NULL
+SHT_PROGBITS
+SHT_SYMTAB
+SHT_STRTAB
+SHT_RELA       ;The section holds relocation entries.
+SHT_HASH       ;The section holds a symbol hash table.
+SHT_DYNAMIC    ;The section holds information for dynamic linking.
+SHT_NOTE       ;The section holds information that marks the file in some way.
+SHT_NOBITS     ;A section of this type occupies no space in the file but otherwise resembles SHT_PROGBITS.
+SHT_REL        ;The section holds relocation entries.
+SHT_SHLIB      ;This section type is reserved but has unspecified semantics.
+SHT_DYNSYM
+
+#enum elf.sections[*].flags
+SHF_WRITE      ;The section contains data that should be writable during process execution.
+SHF_ALLOC      ;The section occupies memory during process execution. Some control sections do not reside in the memory image of an object file; this attribute is off for those sections.
+SHF_EXECINSTR
+
+#enum elf.segments[*].flags
+PF_R           ;The segment is readable.
+PF_W           ;The segment is writable.
+PF_X
+
+#enum elf.segments[*].type
+PT_NULL
+PT_LOAD
+PT_DYNAMIC
+PT_INTERP
+PT_NOTE
+PT_SHLIB
+PT_PHDR
+PT_LOPROC
+PT_HIPROC
+PT_GNU_STACK
+
+#enum elf.dynamic[*].type
+DT_NULL
+DT_NEEDED
+DT_PLTRELSZ
+DT_PLTGOT
+DT_HASH
+DT_STRTAB
+DT_SYMTAB
+DT_RELA
+DT_RELASZ
+DT_RELAENT
+DT_STRSZ
+DT_SYMENT
+DT_INIT
+DT_FINI
+DT_SONAME
+DT_RPATH
+DT_SYMBOLIC
+DT_REL
+DT_RELSZ
+DT_RELENT
+DT_PLTREL
+DT_DEBUG
+DT_TEXTREL
+DT_JMPREL
+DT_BIND_NOW
+DT_INIT_ARRAY
+DT_FINI_ARRAY
+DT_INIT_ARRAYSZ
+DT_FINI_ARRAYSZ
+DT_RUNPATH
+DT_FLAGS
+DT_ENCODING
+
+#enum elf.symtab[*].type
+STT_NOTYPE
+STT_OBJECT
+STT_FUNC
+STT_SECTION
+STT_FILE
+STT_COMMON
+STT_TLS    
+
+#enum elf.symtab[*].bind
+STB_LOCAL
+STB_GLOBAL
+STB_WEAK
+
+

@@ -1,0 +1,1 @@
+.exec method to get console program output into script to test complex code

@@ -1,0 +1,15 @@
+# https://yara.readthedocs.io/en/v3.11.0/modules/math.html  ; New in version 3.3.0.
+
+entropy(offset, size)          ;math.entropy(0, filesize) >= 7
+entropy(string)                ;math.entropy("dummy") > 7
+monte_carlo_pi(offset, size)   ;percentage away from Pi 
+monte_carlo_pi(string)
+serial_correlation(offset, size)
+serial_correlation(string)
+mean(offset, size)
+mean(string)
+deviation(offset, size, mean)  ;deviation from the mean
+deviation(string, mean)
+in_range(test, lower, upper)
+max(int, int)                  ;new in 3.8
+min(int, int)                  ;new in 3.8

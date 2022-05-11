@@ -1,0 +1,16 @@
+rule sect_entropy
+{
+	condition:
+        pe.dbg("sect_entropy") and 
+        for all i in (0 .. pe.number_of_sections -1):(
+            pe.dbg( 
+                pe.sections[i].name,
+                math.entropy(
+                    pe.sections[i].raw_data_offset, 
+                    pe.sections[i].raw_data_size
+                )
+            )
+        )
+
+		
+}

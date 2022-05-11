@@ -1,0 +1,51 @@
+# https://yara.readthedocs.io/en/v3.11.0/modules/dotnet.html
+
+version
+module_name
+number_of_streams
+streams[*]
+{
+    name              ;dotnet.streams[0].name == "~"
+    offset
+    size
+}
+number_of_guids
+guids[]                ;dotnet.guids[0] == "99c08ffd-f378-a891-10ab-c02fe11be6ef"
+number_of_resources
+resources[*]
+{
+    offset            ;uint16be(dotnet.resources[0].offset) == 0x4d5a
+    length
+    name              ;dotnet.assembly.name == "Keylogger"
+}
+assembly
+{
+    version
+    {
+        major 
+	minor 
+	build_number 
+	revision_number
+    }
+    name
+    culture
+}
+number_of_modulerefs
+modulerefs[]           ;dotnet.modulerefs[0] == "kernel32"
+typelib
+assembly_refs
+{
+    name
+    public_key_or_token
+    version
+	{
+        major 
+		minor 
+		build_number 
+		revision_number
+	}
+}
+number_of_user_strings
+user_strings[]
+number_of_field_offsets
+field_offsets[]

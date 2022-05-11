@@ -1,0 +1,21 @@
+#https://yara.readthedocs.io/en/v3.7.0/modules/cuckoo.html
+
+network
+{
+    http_request(regexp) ;cuckoo.network.http_request(/evil\.com/)
+    http_get(regexp)
+    http_post(regexp)
+    dns_lookup(regexp)
+}
+registry
+{
+    key_access(regexp)   ;cuckoo.registry.key_access(/\\Software\\Microsoft\\Windows\\CurrentVersion\\Run/)
+}
+filesystem
+{
+    file_access(regexp)  ;cuckoo.filesystem.file_access(/autoexec\.bat/)
+}
+sync
+{
+    mutex(regexp)   ;cuckoo.sync.mutex(/EvilMutexName/)
+}

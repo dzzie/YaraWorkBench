@@ -1,0 +1,3 @@
+# not available on windows (yet?)
+type()
+mime_type()

@@ -1,0 +1,19 @@
+yr_initialize();
+yr_finalize();
+yr_getVersion(arg1);
+SetVBCallBack(arg1) 
+
+yr_compiler_create
+yr_compiler_set_callback(compiler, callback_function, &warnings);
+yr_compiler_add_string(compiler, string, NULL) != 0)
+yr_compiler_get_rules(compiler, rules);
+yr_compiler_destroy(compiler);
+
+yr_rules_scan_file
+yr_rules_scan_mem
+yr_rules_destroy
+
+yr_rule_strings_foreach
+yr_string_matches_foreach
+yr_object_print_data
+  

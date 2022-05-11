@@ -1,0 +1,290 @@
+# https://yara.readthedocs.io/en/v3.11.0/modules/pe.html
+# https://yara.readthedocs.io/en/latest/modules/pe.html
+#line comment     ;comment example   empty lines ignored
+
+# FUNCTIONS
+
+# -------------- these are specific to Yara Workbench ----------------------------
+
+dbg(string)             ;dump string output ex: pe.dbg(pe.imphash())
+dbg(int)
+dbg(float)
+dbg(string,float)
+dbg(string,int)
+dbg(int,string)
+dbg(string,string)
+dbg(int,int)
+dbgw(string)            ;for unicode strings like resource name
+
+dll_imports[*]
+{
+	name
+	funcCount
+}
+
+import_errors           ;number of errors encountered while parsing import table
+isdef(string)           ;false if value is UNDEFINED ex. pe.isdef("rich_signature.offset") or pe.isdef("number_of_signatures")
+section_exists(name)    ; returns 1 if section name exists, 0 otherwise. alt: for any i in (0 .. pe.number_of_sections-1):(pe.sections[i].name == ".symtab")
+
+# ------------ end Yara Workbench specific functions ----------------------------
+
+machine                 ;pe.machine == pe.MACHINE_AMD64
+checksum
+calculate_checksum()
+subsystem               ;pe.subsystem == pe.SUBSYSTEM_NATIVE
+timestamp
+pointer_to_symbol_table
+number_of_symbols
+size_of_optional_header      ;3.8.0
+opthdr_magic                 ;3.8.0
+size_of_code                 ;3.8.0
+size_of_initialized_data     ;3.8.0
+size_of_uninitialized_data
+entry_point
+base_of_code                 ;3.8.0
+base_of_data                 ;3.8.0
+image_base
+section_alignment            ;3.8.0
+file_alignment               ;3.8.0
+win32_version_value          ;3.8.0
+size_of_image                ;3.8.0
+size_of_headers              ;3.8.0
+characteristics         ;pe.characteristics & pe.DLL
+linker_version
+{
+	major
+	minor
+}
+os_version
+{
+	major
+	minor
+}
+image_version
+{
+	major
+	minor
+}
+subsystem_version
+{
+	major
+	minor
+}
+dll_characteristics
+size_of_stack_reserve
+size_of_stack_commit
+size_of_heap_reserve
+size_of_heap_commit
+loader_flags
+number_of_rva_and_sizes
+data_directories[*]      ;3.8.0
+{
+	virtual_address  ; pe.data_directories[pe.IMAGE_DIRECTORY_ENTRY_EXPORT].virtual_address != 0
+	size
+}
+number_of_sections
+sections[*]
+{
+    	name             ; pe.sections[0].name == ".text"
+	characteristics  ; pe.sections[1].characteristics & SECTION_CNT_CODE
+	virtual_address
+	virtual_size
+	raw_data_offset
+        raw_data_size
+	pointer_to_relocations   ;3.8.0 
+        pointer_to_line_numberss ;3.8.0 
+        number_of_relocationss   ;3.8.0 
+        number_of_line_numberss  ;3.8.0 
+}
+raw_data_size
+overlay             ;3.6.0
+{
+	offset
+	size
+}
+number_of_resources
+resource_timestamp
+resource_version
+{
+	major
+	minor
+}
+resources[*]        ; Flat names of actual resources, no path
+{
+	offset      ; Offset for the resource data.
+	length      ; Length of the resource data.
+	type        ; pe.resources[0].type == pe.RESOURCE_TYPE_RCDATA
+	id          ; ID of the resource (integer).
+	language    ; Language of the resource (integer).
+	type_string ; Type of the resource as a string, if specified.
+	name_string ; Name of the resource as a string, if specified. (UNICODE)
+}
+language_string
+version_info[" ; pe.version_info["CompanyName"] contains "Microsoft"
+#    Comments CompanyName FileDescription FileVersion InternalName 
+#    LegalCopyright LegalTrademarks OriginalFilename ProductName ProductVersion
+number_of_signatures
+signatures[*]
+{
+	issuer
+	subject
+	version
+	algorithm
+	serial
+	not_before
+	not_after
+	valid_on(timestamp)
+}
+rich_signature
+{
+	offset      ;Offset where the rich signature starts. It will be undefined if the file doesn’t have a rich signature.
+	length
+	key         ; Key used to encrypt the data with XOR.
+	raw_data
+	clear_data  ; Data after being decrypted by XORing it with the key.\
+	version(version, [toolid])
+	toolid(toolid, [version])
+}
+# pdb_path                           ;3.13.0
+exports(func_name)
+exports(ordinal)                     ; 3.6.0
+exports(regex)                       ; 3.7.1
+number_of_exports                    ; 3.6.0
+number_of_imports                    ; 3.6.0
+imports(dll_name)
+imports(dll_name, func_name)
+imports(dll_name, ordinal)
+imports(dll_regex, func_regex)
+locale(locale_identifier)            ; pe.locale(0x0419) // Russian (RU)
+language(language_identifier)        ; pe.language(0x0A) // Spanish
+locale
+language
+imphash()
+section_index(name)                  ; returns UNDEFINED if does not exist can not use pe.dbg()
+section_index(addr)
+is_dll()
+is_32bit()
+is_64bit()
+rva_to_offset(addr)                ; 3.6.0
+
+
+# CONSTANTS
+#enum pe.machine
+MACHINE_UNKNOWN
+MACHINE_AM33
+MACHINE_AMD64
+MACHINE_ARM
+MACHINE_ARMNT
+MACHINE_ARM64
+MACHINE_EBC
+MACHINE_I386
+MACHINE_IA64
+MACHINE_M32R
+MACHINE_MIPS16
+MACHINE_MIPSFPU
+MACHINE_MIPSFPU16
+MACHINE_POWERPC
+MACHINE_POWERPCFP
+MACHINE_R4000
+MACHINE_SH3
+MACHINE_SH3DSP
+MACHINE_SH4
+MACHINE_SH5
+MACHINE_THUMB
+MACHINE_WCEMIPSV2
+
+#enum pe.subsystem
+SUBSYSTEM_UNKNOWN
+SUBSYSTEM_NATIVE
+SUBSYSTEM_WINDOWS_GUI
+SUBSYSTEM_WINDOWS_CUI
+SUBSYSTEM_OS2_CUI
+SUBSYSTEM_POSIX_CUI
+SUBSYSTEM_NATIVE_WINDOWS
+SUBSYSTEM_WINDOWS_CE_GUI
+SUBSYSTEM_EFI_APPLICATION
+SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER
+SUBSYSTEM_EFI_RUNTIME_DRIVER
+SUBSYSTEM_XBOX
+SUBSYSTEM_WINDOWS_BOOT_APPLICATION
+
+#enum pe.characteristics
+RELOCS_STRIPPED
+EXECUTABLE_IMAGE
+LINE_NUMS_STRIPPED
+LOCAL_SYMS_STRIPPED
+AGGRESIVE_WS_TRIM
+LARGE_ADDRESS_AWARE
+BYTES_REVERSED_LO
+MACHINE_32BIT
+DEBUG_STRIPPED
+REMOVABLE_RUN_FROM_SWAP
+NET_RUN_FROM_SWAP
+SYSTEM
+DLL
+UP_SYSTEM_ONLY
+BYTES_REVERSED_HI
+
+#enum pe.dll_characteristics
+DYNAMIC_BASE     ;File can be relocated - also marks the file as ASLR compatible
+FORCE_INTEGRITY
+NX_COMPAT        ;Marks the file as DEP compatible
+NO_ISOLATION
+NO_SEH           ;The file does not contain structured exception handlers, this must be set to use SafeSEH
+NO_BIND
+WDM_DRIVER       ;Marks the file as a Windows Driver Model (WDM) device driver.
+TERMINAL_SERVER_AWARE
+
+#enum pe.sections[*].characteristics
+SECTION_CNT_CODE
+SECTION_CNT_INITIALIZED_DATA
+SECTION_CNT_UNINITIALIZED_DATA
+SECTION_GPREL
+SECTION_MEM_16BIT
+SECTION_LNK_NRELOC_OVFL
+SECTION_MEM_DISCARDABLE
+SECTION_MEM_NOT_CACHED
+SECTION_MEM_NOT_PAGED
+SECTION_MEM_SHARED
+SECTION_MEM_EXECUTE
+SECTION_MEM_READ
+SECTION_MEM_WRITE
+
+#enum  pe.resources[*].type
+RESOURCE_TYPE_CURSOR
+RESOURCE_TYPE_BITMAP
+RESOURCE_TYPE_ICON
+RESOURCE_TYPE_MENU
+RESOURCE_TYPE_DIALOG
+RESOURCE_TYPE_STRING
+RESOURCE_TYPE_FONTDIR
+RESOURCE_TYPE_FONT
+RESOURCE_TYPE_ACCELERATOR
+RESOURCE_TYPE_RCDATA
+RESOURCE_TYPE_MESSAGETABLE
+RESOURCE_TYPE_GROUP_CURSOR
+RESOURCE_TYPE_GROUP_ICON
+RESOURCE_TYPE_VERSION
+RESOURCE_TYPE_DLGINCLUDE
+RESOURCE_TYPE_PLUGPLAY
+RESOURCE_TYPE_VXD
+RESOURCE_TYPE_ANICURSOR
+RESOURCE_TYPE_ANIICON
+RESOURCE_TYPE_HTML
+RESOURCE_TYPE_MANIFEST
+
+#used as index for pe.data_directories[] 
+IMAGE_DIRECTORY_ENTRY_EXPORT  
+IMAGE_DIRECTORY_ENTRY_IMPORT  
+IMAGE_DIRECTORY_ENTRY_RESOURCE  
+IMAGE_DIRECTORY_ENTRY_EXCEPTION  
+IMAGE_DIRECTORY_ENTRY_SECURITY   ;digital signatures  
+IMAGE_DIRECTORY_ENTRY_BASERELOC  
+IMAGE_DIRECTORY_ENTRY_DEBUG  
+IMAGE_DIRECTORY_ENTRY_TLS
+IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+IMAGE_DIRECTORY_ENTRY_IAT
+IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
+
